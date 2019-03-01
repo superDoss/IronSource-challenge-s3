@@ -3,12 +3,12 @@ class FilesController{
         this.db = db;
     }
 
-    saveFile(user,file){
+    async saveFile(user,file){
         if(user == null || file == null){
             throw new Error('One argument is missing')
         }
 
-        const fileId = db.insertFile(user,file);
+        const fileId = await this.db.insertFile(user,file);
         return fileId;
     }
 }

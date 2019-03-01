@@ -28,7 +28,7 @@ describe('DB',() => {
             name:'user1',
         };
 
-        it('insert file and return file id',async () => {
+        it('should insert file and return file id',async () => {
             const result = await db.insertFile(user,file);
             expect(result).to.equal(file.filename);
         });

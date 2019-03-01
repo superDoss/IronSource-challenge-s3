@@ -1,18 +1,23 @@
-const { should,expect } = require('chai');
-const FilesController = require('../../src/controllers/files');
-//TODO: implement db
-const db;
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+const { should,expect } = chai;
+const path = require('path');
+const __basedir = path.join(__dirname,'../../')
+const FilesController = require(path.join(__basedir,'src/controllers/files'));
 
 describe('FilesController',() => {
     describe('#saveFile',() => {
-        let db = {
-            insertFile:(file) => 'test'
+        const db = {
+            insertFile:(user,file) => 'test'
         };
 
-        //TODO add properties
         const file = {
-
-        }
+            originalname:'test',
+            path:'test',
+            filename:'BkuTabe',
+            size:1000,
+            public:true,
+        };
 
         const user = {
             id:'test',
@@ -20,16 +25,16 @@ describe('FilesController',() => {
         }
 
         const filesController = new FilesController(db);
-        describe('should save and return file id',async () => {
+        it('should save and return file id',async () => {
             expect(await filesController.saveFile(user,file)).to.equal('test');
         });
 
-        describe('should throw exception if user is not presented',async () => {
-            expect(await filesController.saveFile(null,file)).to.throw()
+        it('should throw exception if user is not presented',async () => {
+            await expect(filesController.saveFile(null,file)).to.eventually.be.rejected;
         });
 
-        describe('should throw exception if file is not presented', async () => {
-            expect(await filesController.saveFile(user,null)).to.throw();
+        it('should throw exception if file is not presented', async () => {
+            await expect(filesController.saveFile(user,null)).to.eventually.be.rejected;
         });
 
         
