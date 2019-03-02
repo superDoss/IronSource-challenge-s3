@@ -103,7 +103,8 @@ class FilesController{
             throw new Error('Missing access token to change file access');
         } else {
             if(await this.db.verifyAccessToken(user,accessToken)){
-                return await this.db.updateFileAccess(user,file,access);
+                await this.db.updateFileAccess(user,file,access);
+                return true;
             } else {
                 throw new Error('Token is not verified');
             }

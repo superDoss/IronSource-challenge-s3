@@ -74,8 +74,8 @@ class DB{
     }
 
     async updateFileAccess(user,file,access) {
-        const statment = `UPDATE files SET public=? WHERE user_id=? AND (id=? OR name=?)`;
-        const params = [access,user,file,file];
+        const statment = `UPDATE files SET public=?,update_date=? WHERE user_id=? AND (id=? OR name=?)`;
+        const params = [access,new Date().toISOString(),user,file,file];
 
         return new Promise((resolve,reject) => {
             this._db.run(statment,params,(err) => {
