@@ -73,6 +73,21 @@ class DB{
         })
     }
 
+    async updateFileAccess(user,file,access) {
+        const statment = `UPDATE files SET public=? WHERE user_id=? AND (id=? OR name=?)`;
+        const params = [access,user,file,file];
+
+        return new Promise((resolve,reject) => {
+            this._db.run(statment,params,(err) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            })
+        })
+    }
+
     async verifyAccessToken(user,accessToken) {
         const statment = `SELECT access_token FROM users WHERE id=?`;
         const params = [user];

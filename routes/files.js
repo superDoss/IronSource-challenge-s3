@@ -66,6 +66,22 @@ router.get('/:userId/:file',async (req,res,next) => {
     } catch (err) {
         res.status(404).end(err.message);
     }
+});
+
+router.put('/:userId/:file',async (req,res,next) => {
+    const { userId,file } = req.params;
+    const { access_token,access } = req.query;
+
+    try{
+        const result = await filesController.updateFileAccess(userId,file,access,access_token);
+        if(result){
+            res.status(200).end();
+        } else {
+            res.status(400).end();
+        }
+    } catch (err) {
+        res.status(400).end(err.message);
+    }
 })
 
 module.exports = router;

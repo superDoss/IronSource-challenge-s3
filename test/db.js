@@ -126,4 +126,17 @@ describe('DB',() => {
             expect(result).to.be.false;
         })
     });
+
+    describe('#updateFileAccess',() => {
+        before(async () => {
+            initDB();
+            await db.insertFile(user,file);
+        })
+
+        it('Should update file access to private', async () => {
+            await db.updateFileAccess(user.id,file.filename,false);
+            const resFile = await db.getFileAccess(user.id,file.filename);
+            expect(resFile.public).to.be.false;
+        });
+    })
 })
