@@ -95,6 +95,25 @@ class DB{
             })
         })
     }
+
+    async verifyFileExist(user,file){
+        const statment = `SELECT id FROM files WHERE user_id=? AND (id=? OR name=?)`;
+        const params = [user.id,file.filename,file.originalname];
+
+        return new Promise((resolve,reject) => {
+            this._db.get(statment,params,(err,row) => {
+                if(err){
+                    reject(err);
+                } else {
+                    if(row){
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+            })
+        }) 
+    }
 }
 
 module.exports = DB;

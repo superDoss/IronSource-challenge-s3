@@ -102,5 +102,25 @@ describe('DB',() => {
             const result = await db.verifyAccessToken(user,'kjnvavar');
             expect(result).to.be.false;
         })
-    })
+    });
+
+    describe('#verifyFileExist',() => {
+        before(async () => {
+            initDB();
+            await db.insertFile(user,file);
+        });
+
+        it('Should find file in db',async () => {
+            const result = await db.verifyFileExist(user,file);
+            expect(result).to.be.true;
+        });
+
+        it('Should not find file in db',async () => {
+            const fileClone = Object.assign({},file);
+            fileClone.filename = 'kjhbdl';
+            fileClone.originalname = 'ttt';
+            const result = await db.verifyFileExist(user,fileClone);
+            expect(result).to.be.false;
+        })
+    });
 })

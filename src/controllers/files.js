@@ -17,21 +17,32 @@ class FilesController{
             throw new Error('One argument is missing')
         }
 
-        const fileAccess = await db.getFileAccess(user,file);
+        if(!await this._fileExist(user,file)){
+            throw new Error('File does not exist');
+        }
+
+        const fileAccess = await this.db.getFileAccess(user,file);
         if(fileAccess.public){
-            return await db.getFilePath(user,file);
+            return await this.db.getFilePath(user,file);
         } else {
             if(accessToken == null){
                 throw new Error('Missing access token for private file');
             } else {
-                if(await db.verifyAccessToken(user,accessToken)){
-                    return await db.getFilePath(user,file);
+                if(await this.db.verifyAccessToken(user,accessToken)){
+                    return await this.db.getFilePath(user,file);
                 } else {
                     throw new Error('Token is not verified');
                 }
             }
         }
+    }
 
+    async _fileExist(user,file) {
+        if(await this.db.verifyFileExist(user,file)){
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
