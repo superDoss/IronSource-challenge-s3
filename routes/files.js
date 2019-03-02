@@ -48,7 +48,16 @@ router.post('/:userId/file',upload.single('file'),async (req,res,next) => {
 
 router.get('/:userId/:file',async (req,res,next) => {
     const { userId,file } = req.params;
-    const { access_token } = req.query;
+    const { access_token,metadata } = req.query;
+
+    if(metadata){
+        try{
+            const fileMeta = await filesController.fileMetadata(userId,file,access_token);
+            res.json(fileMeta);
+        } catch (err) {
+            res.status(404).end(err.message);
+        }
+    }
 
     try{
         const fileResult = await filesController.downloadFile(userId,file,access_token);

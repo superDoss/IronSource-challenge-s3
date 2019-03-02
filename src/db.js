@@ -55,7 +55,7 @@ class DB{
     }
 
     async getFile(user,file) {
-        const statment = `SELECT path,name FROM files
+        const statment = `SELECT id,user_id,name,size,path,create_date,update_date,delete_date,public FROM files
                           WHERE user_id=? AND (id=? OR name=?)`;
 
         const params = [user,file,file];

@@ -100,5 +100,44 @@ describe('FilesController',() => {
             await expect(filesController.downloadFile(user,file,user.accessToken))
                 .to.eventually.rejectedWith('Token is not verified');
         });
+    });
+
+    describe('#fileMetadata',() => {
+        const dbFile = {
+            id:'test',
+            name:'testName',
+            size:1000,
+            create_date:'some date',
+            update_date:'some date',
+            delete_date:'some date',
+            public:1
+        }
+
+        it('Should return file metdata', async () => {
+            
+            const db = {
+                getFileAccess: (user,file) => ({public:true}),
+                getFile: (user,file) => dbFile,
+                verifyFileExist: (user,file) => true,
+            };
+
+            const filesController = new FilesController(db);
+            await expect(filesController.fileMetadata(user,file,user.accessToken))
+            .to.eventually.have.all.keys(['name','size','created','updated','deleted']);
+        });
+
+        it('Should return file metdata with no updated key', async () => {
+            const dbFileClone = Object.assign({},dbFile);
+            dbFileClone.update_date = null;
+            const db = {
+                getFileAccess: (user,file) => ({public:true}),
+                getFile: (user,file) => dbFileClone,
+                verifyFileExist: (user,file) => true,
+            };
+
+            const filesController = new FilesController(db);
+            await expect(filesController.fileMetadata(user,file,user.accessToken))
+            .to.eventually.not.have.key('updated');
+        })
     })
 })

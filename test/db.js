@@ -84,10 +84,12 @@ describe('DB',() => {
             await db.insertFile(user,file);
         });
 
-        it('Should return file path', async () => {
+        it('Should return file data', async () => {
             const result = await db.getFile(user.id,file.filename);
             expect(result.path).to.equal('test');
             expect(result.name).to.equal('test');
+            expect(result.size).to.equal(1000);
+            expect(result.public).to.equal(1);
         })
     });
 
