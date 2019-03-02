@@ -24,7 +24,10 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/bin/www"
+            "program": "${workspaceFolder}/bin/www",
+            "env": {
+                "PORT":"8000"
+            }
         }
     ]
 }

@@ -9,9 +9,9 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
     destination:conf.uploadsPath,
-    // Make sure file name is uniqe
+    // Make sure file name is unique
     filename:(req,file,cb) => {
-        cb(null,Math.random().toString(36).substr(2, 9) + `_${file.originalname}`);
+        cb(null,Math.random().toString(36).substr(2, 9));
     }
 });
 
@@ -19,14 +19,30 @@ const upload = multer({ storage:storage });
 
 //TODO: Change to basedir
 const FilesController = require('../src/controllers/files');
-const filesController = new FilesController();
+const DB = require('../src/db');
+const db = new DB(conf.connectionString);
+const filesController = new FilesController(db);
 
-router.get('/upload',upload.single('file'),async (req,res,next) => {
-    file = req.file;
-    // TODO: check string for public and private
-    file.public = req.query['access'];
 
-    // TODO: Where do i get the user
-    const fileId = await filesController.saveFile(user,file)
-    res.send(fileId);
-})
+router.post('/:userId/file',upload.single('file'),async (req,res,next) => {
+    
+    const file = req.file;
+
+    const { access }  = req.query;
+    const { userId }  = req.params;
+    
+    if(access && access.toLowerCase() === 'public'){
+        file.public = true;
+    } else {
+        file.public = false;
+    }
+
+    const user = {
+        id:userId
+    };
+
+    const fileId = await filesController.saveFile(user,file);
+    res.json({fileId:fileId});
+});
+
+module.exports = router;

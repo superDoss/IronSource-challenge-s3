@@ -1,5 +1,6 @@
 const conf = {
-    uploadsPath:'uploads'
+    uploadsPath:'uploads',
+    connectionString:'db/development.db'
 }
 
 module.exports = conf;
