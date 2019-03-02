@@ -54,39 +54,40 @@ describe('DB',() => {
         });
         
         it('Should return file curent access',async () => {
-            const result = await db.getFileAccess(user,publicFile);
+            const result = await db.getFileAccess(user.id,publicFile.filename);
             expect(result.public).to.be.true;
         });
 
         it('Should return private access',async () => {
-            const result = await db.getFileAccess(user,privateFile);
+            const result = await db.getFileAccess(user.id,privateFile.filename);
             expect(result.public).to.be.false;
         });
 
         it('Should return private access with no filename',async () => {
-            const privateColne = Object.assign({},privateFile);
-            privateColne.filename = '';
-            const result = await db.getFileAccess(user,privateColne);
+            const privateClone = Object.assign({},privateFile);
+            privateClone.filename = '';
+            const result = await db.getFileAccess(user.id,privateClone.originalname);
             expect(result.public).to.be.false;
         });
 
         it('Should return private access with no originalname',async () => {
-            const privateColne = Object.assign({},privateFile);
-            privateColne.originalname = '';
-            const result = await db.getFileAccess(user,privateFile);
+            const privateClone = Object.assign({},privateFile);
+            privateClone.originalname = '';
+            const result = await db.getFileAccess(user.id,privateClone.filename);
             expect(result.public).to.be.false;
         });
     });
 
-    describe('#getFilePath',() => {
+    describe('#getFile',() => {
         before(async () => {
             initDB();
             await db.insertFile(user,file);
         });
 
         it('Should return file path', async () => {
-            const result = await db.getFilePath(user,file);
-            expect(result).to.equal('test');
+            const result = await db.getFile(user.id,file.filename);
+            expect(result.path).to.equal('test');
+            expect(result.name).to.equal('test');
         })
     });
 
@@ -94,12 +95,12 @@ describe('DB',() => {
         before(initDB);
         
         it('Should verify access token',async () => {
-            const result = await db.verifyAccessToken(user,user.accessToken);
+            const result = await db.verifyAccessToken(user.id,user.accessToken);
             expect(result).to.be.true;
         });
 
         it('Should invalidate access token',async () => {
-            const result = await db.verifyAccessToken(user,'kjnvavar');
+            const result = await db.verifyAccessToken(user.id,'kjnvavar');
             expect(result).to.be.false;
         })
     });
@@ -111,7 +112,7 @@ describe('DB',() => {
         });
 
         it('Should find file in db',async () => {
-            const result = await db.verifyFileExist(user,file);
+            const result = await db.verifyFileExist(user.id,file.filename);
             expect(result).to.be.true;
         });
 
@@ -119,7 +120,7 @@ describe('DB',() => {
             const fileClone = Object.assign({},file);
             fileClone.filename = 'kjhbdl';
             fileClone.originalname = 'ttt';
-            const result = await db.verifyFileExist(user,fileClone);
+            const result = await db.verifyFileExist(user.id,fileClone.filename);
             expect(result).to.be.false;
         })
     });

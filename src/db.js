@@ -34,7 +34,7 @@ class DB{
         const statment = `SELECT public FROM files
                           WHERE user_id=? AND (id=? OR name=?)`;
         
-        const params = [user.id,file.filename,file.originalname];
+        const params = [user,file,file];
 
         return new Promise((resolve,reject) => {
             this._db.get(statment,params,(err,row) => {
@@ -54,20 +54,20 @@ class DB{
         });
     }
 
-    async getFilePath(user,file) {
-        const statment = `SELECT path FROM files
+    async getFile(user,file) {
+        const statment = `SELECT path,name FROM files
                           WHERE user_id=? AND (id=? OR name=?)`;
 
-        const params = [user.id,file.filename,file.originalname];
+        const params = [user,file,file];
 
         return new Promise((resolve,reject) => {
-            this._db.get(statment,params,(err,row) => {
+            this._db.get(statment,params,(err,file) => {
                 if(err){
                     reject(err);
-                }  else if(row === undefined) {
+                }  else if(file === undefined) {
                     reject('No rows returned')
                 } else {
-                    resolve(row['path']);
+                    resolve(file);
                 }
             })
         })
@@ -75,7 +75,7 @@ class DB{
 
     async verifyAccessToken(user,accessToken) {
         const statment = `SELECT access_token FROM users WHERE id=?`;
-        const params = [user.id];
+        const params = [user];
 
         return new Promise((resolve,reject) => {
             this._db.get(statment,params,(err,row) => {
@@ -98,7 +98,7 @@ class DB{
 
     async verifyFileExist(user,file){
         const statment = `SELECT id FROM files WHERE user_id=? AND (id=? OR name=?)`;
-        const params = [user.id,file.filename,file.originalname];
+        const params = [user,file,file];
 
         return new Promise((resolve,reject) => {
             this._db.get(statment,params,(err,row) => {

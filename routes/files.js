@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mime = require('mime');
 
 //TODO: Change to basedir
 const conf = require('../config');
@@ -44,5 +45,18 @@ router.post('/:userId/file',upload.single('file'),async (req,res,next) => {
     const fileId = await filesController.saveFile(user,file);
     res.json({fileId:fileId});
 });
+
+router.get('/:userId/:file',async (req,res,next) => {
+    const { userId,file } = req.params;
+    const { accessToken } = req.query;
+
+    try{
+        const fileResult = await filesController.downloadFile(userId,file,accessToken);
+        res.status(200)
+            .download(fileResult.path,fileResult.name,{ dotfiles:'allow' });
+    } catch (err) {
+        res.status(404).end(err.message);
+    }
+})
 
 module.exports = router;

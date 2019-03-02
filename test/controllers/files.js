@@ -44,7 +44,7 @@ describe('FilesController',() => {
         it('Should download public file', async () => {
             const db = {
                 getFileAccess: (user,file) => ({public:true}),
-                getFilePath: (user,file) => 'test',
+                getFile: (user,file) => 'test',
                 verifyFileExist: (user,file) => true,
             };
 
@@ -66,7 +66,7 @@ describe('FilesController',() => {
         it('Should download private file', async () => {
             const db = {
                 getFileAccess: (user,file) => ({public:false}),
-                getFilePath: (user,file) => 'test',
+                getFile: (user,file) => 'test',
                 verifyFileExist: (user,file) => true,
                 verifyAccessToken: (user,token) => true,
             };
@@ -79,7 +79,7 @@ describe('FilesController',() => {
         it('Should throw error for private file with no access token', async () => {
             const db = {
                 getFileAccess: (user,file) => ({public:false}),
-                getFilePath: (user,file) => 'test',
+                getFile: (user,file) => 'test',
                 verifyFileExist: (user,file) => true,
             };
 
@@ -91,7 +91,7 @@ describe('FilesController',() => {
         it('Should throw error for private file with wrong access token', async () => {
             const db = {
                 getFileAccess: (user,file) => ({public:false}),
-                getFilePath: (user,file) => 'test',
+                getFile: (user,file) => 'test',
                 verifyFileExist: (user,file) => true,
                 verifyAccessToken: (user,token) => false,
             };

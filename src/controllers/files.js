@@ -23,13 +23,13 @@ class FilesController{
 
         const fileAccess = await this.db.getFileAccess(user,file);
         if(fileAccess.public){
-            return await this.db.getFilePath(user,file);
+            return await this.db.getFile(user,file);
         } else {
             if(accessToken == null){
                 throw new Error('Missing access token for private file');
             } else {
                 if(await this.db.verifyAccessToken(user,accessToken)){
-                    return await this.db.getFilePath(user,file);
+                    return await this.db.getFile(user,file);
                 } else {
                     throw new Error('Token is not verified');
                 }
