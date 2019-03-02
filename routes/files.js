@@ -48,10 +48,10 @@ router.post('/:userId/file',upload.single('file'),async (req,res,next) => {
 
 router.get('/:userId/:file',async (req,res,next) => {
     const { userId,file } = req.params;
-    const { accessToken } = req.query;
+    const { access_token } = req.query;
 
     try{
-        const fileResult = await filesController.downloadFile(userId,file,accessToken);
+        const fileResult = await filesController.downloadFile(userId,file,access_token);
         res.status(200)
             .download(fileResult.path,fileResult.name,{ dotfiles:'allow' });
     } catch (err) {
