@@ -127,7 +127,7 @@ describe('FilesController',() => {
         });
 
         it('Should return file metdata with no updated key', async () => {
-            const dbFileClone = Object.assign({},dbFile);
+            let dbFileClone = Object.assign({},dbFile);
             dbFileClone.update_date = null;
             const db = {
                 getFileAccess: (user,file) => ({public:true}),
@@ -138,6 +138,33 @@ describe('FilesController',() => {
             const filesController = new FilesController(db);
             await expect(filesController.fileMetadata(user,file,user.accessToken))
             .to.eventually.not.have.key('updated');
+        })
+    })
+
+    describe('#updateFileAccess',() => {
+        const db = {
+            verifyFileExist: (user,file) => true,
+            updateFileAccess: (user,file,access) => access,
+            verifyAccessToken: (user,token) => true,
+        };
+
+        it('Should update file access to private', async () => {
+            const filesController = new FilesController(db);
+            await expect(filesController.updateFileAccess(user,file,'private',user.accessToken))
+                .to.eventually.be.false;
+        })
+
+        it('Should update file access to private', async () => {
+            const filesController = new FilesController(db);
+            await expect(filesController.updateFileAccess(user,file,'public',user.accessToken))
+                .to.eventually.be.true;
+        })
+
+        it('Should throw error when access value is not private or public', async () => {
+            const filesController = new FilesController(db);
+            const access = 'pubglic';
+            await expect(filesController.updateFileAccess(user,file,access,user.accessToken))
+                .to.eventually.rejectedWith('Access value not public or private. value recived: ' + access);
         })
     })
 })

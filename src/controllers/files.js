@@ -98,20 +98,17 @@ class FilesController{
             throw new Error('Access value not public or private. value recived: ' + access);
         }
 
-        const fileAccess = await this.db.getFileAccess(user,file);
-        if(fileAccess.public){
-            return await this.db.updateFileAccess(user,file,access);
+        // User can change access only with a token
+        if(accessToken == null){
+            throw new Error('Missing access token to change file access');
         } else {
-            if(accessToken == null){
-                throw new Error('Missing access token for private file');
+            if(await this.db.verifyAccessToken(user,accessToken)){
+                return await this.db.updateFileAccess(user,file,access);
             } else {
-                if(await this.db.verifyAccessToken(user,accessToken)){
-                    return await this.db.updateFileAccess(user,file,access);
-                } else {
-                    throw new Error('Token is not verified');
-                }
+                throw new Error('Token is not verified');
             }
         }
+        
 
     }
 

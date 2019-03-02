@@ -82,7 +82,7 @@ class DB{
                 if(err) {
                     reject(err);
                 } else {
-                    resolve(true);
+                    resolve(access);
                 }
             })
         })
