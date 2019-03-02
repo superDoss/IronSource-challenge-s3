@@ -50,7 +50,7 @@ router.get('/:userId/:file',async (req,res,next) => {
     const { userId,file } = req.params;
     const { access_token,metadata } = req.query;
 
-    if(metadata){
+    if(metadata && metadata === 'true'){
         try{
             const fileMeta = await filesController.fileMetadata(userId,file,access_token);
             res.json(fileMeta);
