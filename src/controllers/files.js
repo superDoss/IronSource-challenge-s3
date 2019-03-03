@@ -88,7 +88,7 @@ class FilesController{
     }
 
     async updateFileAccess(user,file,access,accessToken) {
-        if(user == null || file == null){
+        if(user == null || file == null || access == null){
             throw new Error('One argument is missing')
         }
 

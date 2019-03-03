@@ -96,7 +96,11 @@ router.delete('/:userId/:file',async (req,res,next) => {
             res.status(400).end();
         }
     } catch (err) {
-        res.status(400).end(err.message);
+        if(err.message === 'File has been deleted' || err.message === 'File does not exist'){
+            res.status(404).end('File not found');
+        } else {
+            res.status(400).end(err.message);
+        }
     }
 })
 
