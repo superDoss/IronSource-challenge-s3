@@ -88,6 +88,22 @@ class DB{
         })
     }
 
+    async deleteFile(user,file) {
+        const statment = `UPDATE files SET delete_date=? WHERE user_id=? AND (id=? OR name=?)`;
+        const params = [new Date().toISOString(),user,file,file];
+        const fileResult = await this.getFile(user,file);
+
+        return new Promise((resolve,reject) => {
+            this._db.run(statment,params,(err) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve(fileResult.path);
+                }
+            })
+        })
+    }
+
     async verifyAccessToken(user,accessToken) {
         const statment = `SELECT access_token FROM users WHERE id=?`;
         const params = [user];

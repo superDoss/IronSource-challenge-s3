@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 class FilesController{
     constructor(db){
         this.db = db;
@@ -103,14 +105,34 @@ class FilesController{
             throw new Error('Missing access token to change file access');
         } else {
             if(await this.db.verifyAccessToken(user,accessToken)){
-                await this.db.updateFileAccess(user,file,access);
+                return await this.db.updateFileAccess(user,file,access);
+            } else {
+                throw new Error('Token is not verified');
+            }
+        }
+    }
+
+    async deleteFile(user,file,accessToken) {
+        if(user == null || file == null){
+            throw new Error('One argument is missing')
+        }
+
+        if(!await this._fileExist(user,file)){
+            throw new Error('File does not exist');
+        }
+
+        // User can delete file only with a token
+        if(accessToken == null){
+            throw new Error('Missing access token to delete private file');
+        } else {
+            if(await this.db.verifyAccessToken(user,accessToken)){
+                const filePath = await this.db.deleteFile(user,file,access);
+                fs.unlinkSync(filePath);
                 return true;
             } else {
                 throw new Error('Token is not verified');
             }
         }
-        
-
     }
 
     async _fileExist(user,file) {

@@ -84,4 +84,20 @@ router.put('/:userId/:file',async (req,res,next) => {
     }
 })
 
+router.delete('/:userId/:file',async (req,res,next) => {
+    const { userId,file } = req.params;
+    const { access_token } = req.query;
+
+    try{
+        const result = await filesController.deleteFile(userId,file,access_token);
+        if(result){
+            res.status(200).end();
+        } else {
+            res.status(400).end();
+        }
+    } catch (err) {
+        res.status(400).end(err.message);
+    }
+})
+
 module.exports = router;

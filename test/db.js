@@ -119,7 +119,7 @@ describe('DB',() => {
         });
 
         it('Should not find file in db',async () => {
-            const fileClone = Object.assign({},file);
+            let fileClone = Object.assign({},file);
             fileClone.filename = 'kjhbdl';
             fileClone.originalname = 'ttt';
             const result = await db.verifyFileExist(user.id,fileClone.filename);
@@ -137,6 +137,18 @@ describe('DB',() => {
             await db.updateFileAccess(user.id,file.filename,false);
             const resFile = await db.getFileAccess(user.id,file.filename);
             expect(resFile.public).to.be.false;
+        });
+    });
+
+    describe('#deleteFile',() => {
+        before(async () => {
+            initDB();
+            await db.insertFile(user,file);
+        });
+
+        it('Should update file delete_date and return its path',async () => {
+            const resultPath = await db.deleteFile(user.id,file.filename);
+            expect(resultPath).to.equal(file.path);
         });
     })
 })
