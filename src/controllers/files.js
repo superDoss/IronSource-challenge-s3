@@ -1,10 +1,23 @@
 const fs = require('fs');
 
+
+/**
+ * @class FilesController
+ * controlls any buisness logic of the files
+ */
 class FilesController{
     constructor(db){
         this.db = db;
     }
 
+    /**
+     * Gets a user and a file name and insert to the db
+     *
+     * @param {string} user
+     * @param {string} file
+     * @returns {string} fileId
+     * @memberof FilesController
+     */
     async saveFile(user,file){
         if(user == null || file == null){
             throw new Error('One argument is missing')
@@ -13,7 +26,16 @@ class FilesController{
         const fileId = await this.db.insertFile(user,file);
         return fileId;
     }
-    
+
+    /**
+     * Returns file path from db to download
+     *
+     * @param {string} user
+     * @param {string} file
+     * @param {string} accessToken
+     * @returns {object}
+     * @memberof FilesController
+     */
     async downloadFile(user,file,accessToken){
         if(user == null || file == null){
             throw new Error('One argument is missing')
@@ -42,7 +64,15 @@ class FilesController{
             }
         }
     }
-
+    /**
+     * Gets user and file and reutrns metdata
+     *
+     * @param {string} user
+     * @param {string} file
+     * @param {string} accessToken
+     * @returns {object}
+     * @memberof FilesController
+     */
     async fileMetadata(user,file,accessToken){
         if(user == null || file == null){
             throw new Error('One argument is missing')
@@ -85,7 +115,16 @@ class FilesController{
             }
         }
     }
-
+    /**
+     * Update file access from public to private and vice versa
+     *
+     * @param {string} user
+     * @param {string} file
+     * @param {string} access
+     * @param {string} accessToken
+     * @returns {string}
+     * @memberof FilesController
+     */
     async updateFileAccess(user,file,access,accessToken) {
         if(user == null || file == null || access == null){
             throw new Error('One argument is missing')
@@ -119,6 +158,15 @@ class FilesController{
         }
     }
 
+    /**
+     * Delete a file from db and file system
+     *
+     * @param {string} user
+     * @param {string} file
+     * @param {string} accessToken
+     * @returns true if file deleted
+     * @memberof FilesController
+     */
     async deleteFile(user,file,accessToken) {
         if(user == null || file == null){
             throw new Error('One argument is missing')
@@ -146,6 +194,14 @@ class FilesController{
         }
     }
 
+    /**
+     * Check if file exist in db
+     * @private
+     * @param {string} user
+     * @param {string} file
+     * @returns {boolean}
+     * @memberof FilesController
+     */
     async _fileExist(user,file) {
         if(await this.db.verifyFileExist(user,file)){
             return true;
@@ -154,6 +210,14 @@ class FilesController{
         }
     }
 
+    /**
+     * Check if file has been deleted
+     *
+     * @param {string} user
+     * @param {string} file
+     * @returns {boolean}
+     * @memberof FilesController
+     */
     async _isFileDeleted(user,file) {
         if(await this.db.isFileDeleted(user,file)){
             return true;
