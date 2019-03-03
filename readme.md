@@ -1,4 +1,4 @@
-To run the project use `npm install` and `npm run` you can then access the server via port 8000.
+To run the project use `npm install` and `npm start` you can then access the server via port localhost:8000
 
 Also tests are avaliable `npm test`;
 
