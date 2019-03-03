@@ -1,10 +1,22 @@
 const sqlite3 = require('sqlite3').verbose();
-
+/**
+ * Class to represent action in front of the database
+ *
+ * @class DB
+ */
 class DB{
     constructor(connection){
         this._db = new sqlite3.Database(connection);
     }
-
+    
+    /**
+     * Insert file to db
+     *
+     * @param {object} user
+     * @param {object} file
+     * @returns {Promise}
+     * @memberof DB
+     */
     async insertFile(user,file){
         const  statment = `INSERT INTO files (id,user_id,name,size,path,create_date,public) 
                             VALUES (?,?,?,?,?,?,?)`;
@@ -29,6 +41,14 @@ class DB{
        }); 
     }
 
+    /**
+     * Get file current access from db
+     *
+     * @param {string} user
+     * @param {string} file
+     * @returns {Promise{object}}
+     * @memberof DB
+     */
     async getFileAccess(user,file){
         const statment = `SELECT public FROM files
                           WHERE user_id=? AND (id=? OR name=?)`;
@@ -52,7 +72,15 @@ class DB{
             })
         });
     }
-
+    
+    /**
+     *  Get file metadata from db
+     *
+     * @param {string} user
+     * @param {string} file
+     * @returns {Promise{object}}
+     * @memberof DB
+     */
     async getFile(user,file) {
         const statment = `SELECT id,user_id,name,size,path,create_date,update_date,delete_date,public FROM files
                           WHERE user_id=? AND (id=? OR name=?)`;
@@ -71,7 +99,16 @@ class DB{
             })
         })
     }
-
+    
+    /**
+     *  Update file access in db
+     *
+     * @param {string} user
+     * @param {string} file
+     * @param {boolean} access
+     * @returns {Promise{object}}
+     * @memberof DB
+     */
     async updateFileAccess(user,file,access) {
         const statment = `UPDATE files SET public=?,update_date=? WHERE user_id=? AND (id=? OR name=?)`;
         const params = [access,new Date().toISOString(),user,file,file];
@@ -86,7 +123,15 @@ class DB{
             })
         })
     }
-
+    
+    /**
+     *  Change file status to be deleted
+     *
+     * @param {string} user
+     * @param {string} file
+     * @returns {Promise}
+     * @memberof DB
+     */
     async deleteFile(user,file) {
         const statment = `UPDATE files SET delete_date=? WHERE user_id=? AND (id=? OR name=?)`;
         const params = [new Date().toISOString(),user,file,file];
@@ -103,6 +148,14 @@ class DB{
         })
     }
 
+    /**
+     * Verify that access token is correct
+     *
+     * @param {string} user
+     * @param {string} accessToken
+     * @returns {Promise{boolean}}
+     * @memberof DB
+     */
     async verifyAccessToken(user,accessToken) {
         const statment = `SELECT access_token FROM users WHERE id=?`;
         const params = [user];
@@ -126,6 +179,14 @@ class DB{
         })
     }
 
+    /**
+     * Check if file exist in db
+     *
+     * @param {string} user
+     * @param {string} file
+     * @returns {boolean}
+     * @memberof DB
+     */
     async verifyFileExist(user,file){
         const statment = `SELECT id FROM files WHERE user_id=? AND (id=? OR name=?)`;
         const params = [user,file,file];
@@ -145,6 +206,14 @@ class DB{
         }) 
     }
 
+    /**
+     * Check if file have been deleted
+     *
+     * @param {string} user
+     * @param {string} file
+     * @returns {boolean}
+     * @memberof DB
+     */
     async isFileDeleted(user,file) {
         const statment = `SELECT id,delete_date FROM files WHERE user_id=? AND (id=? OR name=?) AND delete_date IS NOT NULL`;
         const params = [user,file,file];
