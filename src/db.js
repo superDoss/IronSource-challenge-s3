@@ -1,7 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 
 class DB{
-    //TODO: intialize db testing
     constructor(connection){
         this._db = new sqlite3.Database(connection);
     }

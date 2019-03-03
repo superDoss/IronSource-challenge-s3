@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const mime = require('mime');
 
-//TODO: Change to basedir
-const conf = require('../config');
 const path = require('path');
+const __basedir = path.join(__dirname,'../')
+const conf = require(path.join(__basedir,'config'));
 
 const multer = require('multer');
 
@@ -18,9 +17,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage:storage });
 
-//TODO: Change to basedir
-const FilesController = require('../src/controllers/files');
-const DB = require('../src/db');
+const FilesController = require(path.join(__basedir,'src/controllers/files'));
+const DB = require(path.join(__basedir,'src/db'));
 const db = new DB(conf.connectionString);
 const filesController = new FilesController(db);
 
@@ -74,11 +72,8 @@ router.put('/:userId/:file',async (req,res,next) => {
 
     try{
         const result = await filesController.updateFileAccess(userId,file,access,access_token);
-        if(result){
-            res.status(200).end();
-        } else {
-            res.status(400).end();
-        }
+        res.status(200).end(access);
+        
     } catch (err) {
         res.status(400).end(err.message);
     }

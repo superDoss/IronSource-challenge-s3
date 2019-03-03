@@ -13,8 +13,7 @@ class FilesController{
         const fileId = await this.db.insertFile(user,file);
         return fileId;
     }
-
-    // TODO: move file access check to separte function
+    
     async downloadFile(user,file,accessToken){
         if(user == null || file == null){
             throw new Error('One argument is missing')

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const __basedir = path.join(__dirname,'../')
+const __basedir = path.join(__dirname,'../');
 const DB = require(path.join(__basedir,'src/db'));
 const conf = require(path.join(__basedir,'config'));
 const rimraf = require("rimraf");
