@@ -24,6 +24,10 @@ class FilesController{
             throw new Error('File does not exist');
         }
 
+        if(await this._isFileDeleted(user,file)){
+            throw new Error('File has been deleted');
+        }
+
         const fileAccess = await this.db.getFileAccess(user,file);
         if(fileAccess.public){
             return await this.db.getFile(user,file);
@@ -92,6 +96,10 @@ class FilesController{
             throw new Error('File does not exist');
         }
 
+        if(await this._isFileDeleted(user,file)){
+            throw new Error('File has been deleted');
+        }
+
         if(access.toLowerCase() === 'public'){
             access = true;
         } else if (access.toLowerCase() === 'private') {
@@ -121,12 +129,16 @@ class FilesController{
             throw new Error('File does not exist');
         }
 
+        if(await this._isFileDeleted(user,file)){
+            throw new Error('File has already been deleted');
+        }
+
         // User can delete file only with a token
         if(accessToken == null){
             throw new Error('Missing access token to delete private file');
         } else {
             if(await this.db.verifyAccessToken(user,accessToken)){
-                const filePath = await this.db.deleteFile(user,file,access);
+                const filePath = await this.db.deleteFile(user,file);
                 fs.unlinkSync(filePath);
                 return true;
             } else {
@@ -137,6 +149,14 @@ class FilesController{
 
     async _fileExist(user,file) {
         if(await this.db.verifyFileExist(user,file)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    async _isFileDeleted(user,file) {
+        if(await this.db.isFileDeleted(user,file)){
             return true;
         } else {
             return false;

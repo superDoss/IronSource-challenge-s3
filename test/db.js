@@ -124,7 +124,7 @@ describe('DB',() => {
             fileClone.originalname = 'ttt';
             const result = await db.verifyFileExist(user.id,fileClone.filename);
             expect(result).to.be.false;
-        })
+        });
     });
 
     describe('#updateFileAccess',() => {
@@ -149,6 +149,24 @@ describe('DB',() => {
         it('Should update file delete_date and return its path',async () => {
             const resultPath = await db.deleteFile(user.id,file.filename);
             expect(resultPath).to.equal(file.path);
+        });
+    });
+
+    describe('#isFileDeleted',async () => {
+        before(async () => {
+            initDB();
+            await db.insertFile(user,file);
+        })
+
+        it('File should not be return as deleted',async () => {
+            const result = await db.isFileDeleted(user.id,file.filename);
+            expect(result).to.be.false;
+        });
+
+        it('File should return as deleted',async () => {
+            await db.deleteFile(user.id,file.filename);
+            const result = await db.isFileDeleted(user.id,file.filename);
+            expect(result).to.be.true;
         });
     })
 })

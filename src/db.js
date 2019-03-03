@@ -145,6 +145,25 @@ class DB{
             })
         }) 
     }
+
+    async isFileDeleted(user,file) {
+        const statment = `SELECT id,delete_date FROM files WHERE user_id=? AND (id=? OR name=?) AND delete_date IS NOT NULL`;
+        const params = [user,file,file];
+
+        return new Promise((resolve,reject) => {
+            this._db.get(statment,params,(err,row) => {
+                if(err){
+                    reject(err);
+                } else {
+                    if(row){
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+            })
+        }) 
+    }
 }
 
 module.exports = DB;
