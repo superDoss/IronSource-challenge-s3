@@ -55,15 +55,17 @@ router.get('/:userId/:file',async (req,res,next) => {
         } catch (err) {
             res.status(404).end(err.message);
         }
+    } else {
+        try{
+            const fileResult = await filesController.downloadFile(userId,file,access_token);
+            res.status(200)
+                .download(fileResult.path,fileResult.name,{ dotfiles:'allow' });
+        } catch (err) {
+            res.status(404).end(err.message);
+        }
     }
 
-    try{
-        const fileResult = await filesController.downloadFile(userId,file,access_token);
-        res.status(200)
-            .download(fileResult.path,fileResult.name,{ dotfiles:'allow' });
-    } catch (err) {
-        res.status(404).end(err.message);
-    }
+    
 });
 
 router.put('/:userId/:file',async (req,res,next) => {
