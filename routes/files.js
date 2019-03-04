@@ -62,7 +62,15 @@ router.get('/:userId/:file',async (req,res,next) => {
             res.status(200)
                 .download(fileResult.path,fileResult.name,{ dotfiles:'allow' });
         } catch (err) {
-            res.status(404).end(err.message);
+            switch(err.message){
+                case('File does not exist' || 'File has been deleted'):
+                    res.status(404).end(err.message);
+                    return;
+                case('Missing access token for private file' || 'Token is not verified'):
+                    res.status(400).end(err.message);
+                    return;
+            }
+            
         }
     }
 });
