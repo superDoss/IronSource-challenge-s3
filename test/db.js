@@ -32,9 +32,10 @@ describe('DB',() => {
 
     describe('#insertFile',() => {
         before(initDB);
-        it('should insert file and return file id',async () => {
+        it('should insert file and return file id and accessToken',async () => {
             const result = await db.insertFile(user,file);
-            expect(result).to.equal(file.filename);
+            expect(result.id).to.equal(file.filename);
+            expect(result).to.have.keys(['id','accessToken']);
         });
     })
 
@@ -94,15 +95,20 @@ describe('DB',() => {
     });
 
     describe('#verifyAccessToken',() => {
-        before(initDB);
+        let accessToken = '';
+        before(async () => {
+            initDB();
+            const res = await db.insertFile(user,file);
+            accessToken = res.accessToken;
+        });
         
         it('Should verify access token',async () => {
-            const result = await db.verifyAccessToken(user.id,user.accessToken);
+            const result = await db.verifyAccessToken(user.id,file.filename,accessToken);
             expect(result).to.be.true;
         });
 
         it('Should invalidate access token',async () => {
-            const result = await db.verifyAccessToken(user.id,'kjnvavar');
+            const result = await db.verifyAccessToken(user.id,file.filename,'kjnvavar');
             expect(result).to.be.false;
         })
     });

@@ -5,6 +5,7 @@ CREATE TABLE files (
     name varchar, 
     size integer,
     path varchar,
+    access_token varchar,
     create_date datetime,
     update_date datetime,
     delete_date datetime,

@@ -15,7 +15,7 @@ class FilesController{
      *
      * @param {string} user
      * @param {string} file
-     * @returns {string} fileId
+     * @returns {string} 
      * @memberof FilesController
      */
     async saveFile(user,file){
@@ -23,8 +23,8 @@ class FilesController{
             throw new Error('One argument is missing')
         }
 
-        const fileId = await this.db.insertFile(user,file);
-        return fileId;
+        const fileResult = await this.db.insertFile(user,file);
+        return fileResult;
     }
 
     /**
@@ -56,7 +56,7 @@ class FilesController{
             if(accessToken == null){
                 throw new Error('Missing access token for private file');
             } else {
-                if(await this.db.verifyAccessToken(user,accessToken)){
+                if(await this.db.verifyAccessToken(user,file,accessToken)){
                     return await this.db.getFile(user,file);
                 } else {
                     throw new Error('Token is not verified');
@@ -107,7 +107,7 @@ class FilesController{
             if(accessToken == null){
                 throw new Error('Missing access token for private file');
             } else {
-                if(await this.db.verifyAccessToken(user,accessToken)){
+                if(await this.db.verifyAccessToken(user,file,accessToken)){
                     return _fileTransform(await this.db.getFile(user,file));
                 } else {
                     throw new Error('Token is not verified');
@@ -150,7 +150,7 @@ class FilesController{
         if(accessToken == null){
             throw new Error('Missing access token to change file access');
         } else {
-            if(await this.db.verifyAccessToken(user,accessToken)){
+            if(await this.db.verifyAccessToken(user,file,accessToken)){
                 return await this.db.updateFileAccess(user,file,access);
             } else {
                 throw new Error('Token is not verified');
@@ -184,7 +184,7 @@ class FilesController{
         if(accessToken == null){
             throw new Error('Missing access token to delete private file');
         } else {
-            if(await this.db.verifyAccessToken(user,accessToken)){
+            if(await this.db.verifyAccessToken(user,file,accessToken)){
                 const filePath = await this.db.deleteFile(user,file);
                 fs.unlinkSync(filePath);
                 return true;

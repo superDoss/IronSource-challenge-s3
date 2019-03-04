@@ -5,13 +5,14 @@ const path = require('path');
 const __basedir = path.join(__dirname,'../')
 const conf = require(path.join(__basedir,'config'));
 
+const shortUUID = require('short-uuid');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
     destination:conf.uploadsPath,
     // Make sure file name is unique
     filename:(req,file,cb) => {
-        cb(null,Math.random().toString(36).substr(2, 9));
+        cb(null,shortUUID.generate());
     }
 });
 
@@ -40,8 +41,8 @@ router.post('/:userId/file',upload.single('file'),async (req,res,next) => {
         id:userId
     };
 
-    const fileId = await filesController.saveFile(user,file);
-    res.json({fileId:fileId});
+    const fileResult = await filesController.saveFile(user,file);
+    res.json(fileResult);
 });
 
 router.get('/:userId/:file',async (req,res,next) => {
@@ -64,8 +65,6 @@ router.get('/:userId/:file',async (req,res,next) => {
             res.status(404).end(err.message);
         }
     }
-
-    
 });
 
 router.put('/:userId/:file',async (req,res,next) => {

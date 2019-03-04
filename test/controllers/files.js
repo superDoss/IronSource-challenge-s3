@@ -84,7 +84,7 @@ describe('FilesController',() => {
 
         it('Should throw error for private file with wrong access token', async () => {
             db.getFileAccess = (user,file) => ({public:false});
-            db.verifyAccessToken = (user,token) => false;
+            db.verifyAccessToken = (user,file,token) => false;
 
             const filesController = new FilesController(db);
             await expect(filesController.downloadFile(user,file,user.accessToken))
@@ -156,7 +156,7 @@ describe('FilesController',() => {
         const db = {
             verifyFileExist: (user,file) => true,
             updateFileAccess: (user,file,access) => access,
-            verifyAccessToken: (user,token) => true,
+            verifyAccessToken: (user,file,token) => true,
             isFileDeleted: (user,file) => false
         };
 
@@ -184,7 +184,7 @@ describe('FilesController',() => {
         const db = {
             verifyFileExist: (user,file) => true,
             deleteFile: (user,file,token) => path.join(__basedir,'test.txt'),
-            verifyAccessToken: (user,token) => true,
+            verifyAccessToken: (user,file,token) => true,
             isFileDeleted: (user,file) => false,
         };
 

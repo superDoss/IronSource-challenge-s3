@@ -1,4 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
+const UUIDv1 = require('uuid/v1');
 /**
  * Class to represent action in front of the database
  *
@@ -18,14 +19,16 @@ class DB{
      * @memberof DB
      */
     async insertFile(user,file){
-        const  statment = `INSERT INTO files (id,user_id,name,size,path,create_date,public) 
-                            VALUES (?,?,?,?,?,?,?)`;
+        const  statment = `INSERT INTO files (id,user_id,name,size,path,access_token,create_date,public) 
+                            VALUES (?,?,?,?,?,?,?,?)`;
+        const accessToken = UUIDv1();
         const params = [
             file.filename,
             user.id,
             file.originalname,
             file.size,
             file.path,
+            accessToken,
             new Date().toISOString(),
             file.public
         ];
@@ -35,7 +38,7 @@ class DB{
                 if(err){
                     reject(err);
                 } else {
-                    resolve(file.filename);
+                    resolve({id:file.filename,accessToken:accessToken});
                 }
             })
        }); 
@@ -156,23 +159,22 @@ class DB{
      * @returns {Promise{boolean}}
      * @memberof DB
      */
-    async verifyAccessToken(user,accessToken) {
-        const statment = `SELECT access_token FROM users WHERE id=?`;
-        const params = [user];
+    async verifyAccessToken(user,file,accessToken) {
+        const statment = `SELECT access_token FROM files 
+                            WHERE user_id=? 
+                            AND (id=? OR name=?) 
+                            AND access_token=?`;
+        const params = [user,file,file,accessToken];
 
         return new Promise((resolve,reject) => {
             this._db.get(statment,params,(err,row) => {
                 if(err){
                     reject(err);
-                }  else if(row === undefined) {
-                    reject('No rows returned')
                 } else {
-                    const token = row['access_token'];
-                    
-                    if(token === accessToken){
-                        resolve(true);
-                    } else {
+                    if(row === undefined) {
                         resolve(false);
+                    } else {
+                        resolve(true);
                     }
                 }
             })
