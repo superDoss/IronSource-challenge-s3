@@ -62,15 +62,7 @@ router.get('/:userId/:file',async (req,res,next) => {
             res.status(200)
                 .download(fileResult.path,fileResult.name,{ dotfiles:'allow' });
         } catch (err) {
-            switch(err.message){
-                case('File does not exist' || 'File has been deleted'):
-                    res.status(404).end(err.message);
-                    return;
-                case('Missing access token for private file' || 'Token is not verified'):
-                    res.status(400).end(err.message);
-                    return;
-            }
-            
+            res.status(_getErrorCode(err)).end(err.message);
         }
     }
 });
@@ -84,7 +76,7 @@ router.put('/:userId/:file',async (req,res,next) => {
         res.status(200).end(access);
         
     } catch (err) {
-        res.status(400).end(err.message);
+        res.status(_getErrorCode(err)).end(err.message);
     }
 })
 
@@ -107,5 +99,21 @@ router.delete('/:userId/:file',async (req,res,next) => {
         }
     }
 })
+
+const errorCodes = {
+    'File does not exist':404,
+    'File has been deleted':404,
+    'Missing access token for private file':400,
+    'Token is not verified':400,
+    'Missing access token to change file access':400,
+}
+
+const _getErrorCode = (error) => {
+    if(errorCodes[error.message]){
+        return errorCodes[error.message];
+    } else {
+        return 400;
+    }
+}
 
 module.exports = router;
